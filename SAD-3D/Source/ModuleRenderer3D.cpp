@@ -5,8 +5,10 @@
 #include "ModuleGui.h"
 #include "ModuleSceneManager.h"
 #include "ModuleCamera3D.h"
+#include "ModuleResources.h"
 
 #include "ComponentCamera.h"
+#include "ResourceShader.h"
 
 #include "Imgui/imgui.h"
 #include "OpenGL.h"
@@ -56,67 +58,42 @@ bool ModuleRenderer3D::Init(json file)
 			CONSOLE_LOG("|[error]: Error initializing glew! %s\n"/*, glewGetErrorString(error)*/);
 			ret = false;
 		}
-
-
-		//Initialize Projection Matrix
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		//Check for error
-		error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			CONSOLE_LOG("|[error]: Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
-
-		//Initialize Modelview Matrix
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		//Check for error
-		error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			CONSOLE_LOG("|[error]: Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
 		
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glClearDepth(1.0f);
-		
-		//Initialize clear color
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		//glClearDepth(1.0f);
+		//
+		////Initialize clear color
+		//glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		//Check for error
-		error = glGetError();
-		if(error != GL_NO_ERROR)
-		{
-			CONSOLE_LOG("|[error]: Error initializing OpenGL! %s\n", gluErrorString(error));
-			ret = false;
-		}
+		////Check for error
+		//error = glGetError();
+		//if(error != GL_NO_ERROR)
+		//{
+		//	CONSOLE_LOG("|[error]: Error initializing OpenGL! %s\n", gluErrorString(error));
+		//	ret = false;
+		//}
 
-		// --- Set lights and OpenGL Capabilities ---
-		GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
-		
-		lights[0].ref = GL_LIGHT0;
-		lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
-		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
-		lights[0].SetPos(0.0f, 0.0f, 2.5f);
-		lights[0].Init();
-		
-		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
+		//// --- Set lights and OpenGL Capabilities ---
+		//GLfloat LightModelAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
+		//
+		//lights[0].ref = GL_LIGHT0;
+		//lights[0].ambient.Set(0.25f, 0.25f, 0.25f, 1.0f);
+		//lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
+		//lights[0].SetPos(0.0f, 0.0f, 2.5f);
+		//lights[0].Init();
+		//
+		//GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		//glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
-		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
-		
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		lights[0].Active(true);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
+		//GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		//glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
+		//
+		//glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
+		//lights[0].Active(true);
+		//glEnable(GL_LIGHTING);
+		//glEnable(GL_COLOR_MATERIAL);
 
 
 		// Transparency and color merge
@@ -126,6 +103,54 @@ bool ModuleRenderer3D::Init(json file)
 
 	CONSOLE_LOG("OpenGL Version: %s", glGetString(GL_VERSION));
 	CONSOLE_LOG("Glew Version: %s", glewGetString(GLEW_VERSION));
+
+	GLint formats = 0;
+	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &formats);
+	if (formats < 1) {
+		std::cerr << "Driver does not support any binary formats." << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	CONSOLE_LOG("OpenGL Version: %s", glGetString(GL_VERSION));
+	CONSOLE_LOG("Glew Version: %s", glewGetString(GLEW_VERSION));
+
+	// --- Creating Default Vertex and Fragment Shaders ---
+
+	const char* vertexShaderSource =
+		"#version 460 core \n"
+		"layout (location = 0) in vec3 position; \n"
+		"layout(location = 1) in vec3 normal; \n"
+		"layout(location = 2) in vec3 color; \n"
+		"layout (location = 3) in vec2 texCoord; \n"
+		"out vec3 ourColor; \n"
+		"out vec2 TexCoord; \n"
+		"uniform mat4 SAD_Model; \n"
+		"uniform mat4 SAD_View; \n"
+		"uniform mat4 SAD_Projection; \n"
+		"void main(){ \n"
+		"gl_Position = SAD_Projection * SAD_View * SAD_Model * vec4(position, 1.0f); \n"
+		"ourColor = color; \n"
+		"TexCoord = texCoord; \n"
+		"}\n"
+		;
+
+	const char* fragmentShaderSource =
+		"#version 460 core \n"
+		"in vec3 ourColor; \n"
+		"in vec2 TexCoord; \n"
+		"out vec4 color; \n"
+		"uniform sampler2D ourTexture; \n"
+		"void main(){ \n"
+		"color = texture(ourTexture, TexCoord); \n"
+		"} \n"
+		;
+
+	defaultShader = (ResourceShader*)App->resources->CreateResource(Resource::ResourceType::SHADER);
+	defaultShader->FragmentCode = fragmentShaderSource;
+	defaultShader->VertexCode = vertexShaderSource;
+	defaultShader->ReloadAndCompileShader();
+	defaultShader->SetName("Standard");
+	glUseProgram(defaultShader->shaderID);
 
 	// Projection matrix for
 	OnResize(App->window->GetWindowWidth(), App->window->GetWindowHeight());
