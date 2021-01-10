@@ -4,6 +4,7 @@
 
 #include "Importer.h"
 #include "ImporterScene.h"
+#include "ImporterShader.h"
 #include "ModuleSceneManager.h"
 #include "ModuleFileSystem.h"
 
@@ -29,6 +30,7 @@ void MyAssimpCallback(const char * msg, char * userData)
 ModuleImporter::ModuleImporter(bool start_enabled) : Module(start_enabled)
 {
 	IScene = new ImporterScene;
+	IShader = new ImporterShader;
 }
 
 ModuleImporter::~ModuleImporter()
@@ -50,6 +52,8 @@ bool ModuleImporter::Start()
 	std::vector<std::string> filters;
 	filters.push_back("fbx");
 	filters.push_back("FBX");
+	filters.push_back("glsl");
+	filters.push_back("GLSL");
 
 	ImportAssets(ASSETS_FOLDER, filters);
 
@@ -114,6 +118,11 @@ bool ModuleImporter::CleanUp()
 		IScene = nullptr;
 	}
 
+	if (IShader) {
+		delete IShader;
+		IShader = nullptr;
+	}
+
 	return true;
 }
 
@@ -143,6 +152,13 @@ bool ModuleImporter::LoadFromPath(const char* path) const
 		else if (DroppedFile_path.find(".json") != std::string::npos || DroppedFile_path.find(".JSON") != std::string::npos)
 		{
 
+		}
+		// If it is a shader
+		else if (DroppedFile_path.find(".glsl") != std::string::npos || DroppedFile_path.find(".GLSL") != std::string::npos) {
+			ImportShaderData data;
+			data.path = DroppedFile_path.c_str();
+
+			IShader->Import(data);
 		}
 		// If it is an image file file ...
 		else if (DroppedFile_path.find(".dds") != std::string::npos || DroppedFile_path.find(".png") != std::string::npos)
