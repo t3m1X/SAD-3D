@@ -3,6 +3,8 @@
 
 #include "Resource.h"
 #include "Globals.h"
+#include <vector>
+#include "ResourceShader.h"
 
 class ResourceTexture;
 
@@ -12,8 +14,13 @@ public:
 	ResourceMaterial();
 	~ResourceMaterial();
 
+	void UpdateUniforms();
+
 public:
 	ResourceTexture* resource_diffuse = nullptr;
+	ResourceShader* shader = nullptr;
+	std::vector<ResourceShader::Uniform*> uniforms;
+
 };
 
 #endif //__RESOURCE_MATERIAL_H__

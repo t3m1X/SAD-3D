@@ -137,13 +137,8 @@ void ModuleCamera3D::FrameObject(GameObject* GO)
 		ComponentTransform* transform = GO->GetComponent<ComponentTransform>(Component::ComponentType::Transform);
 		ComponentMesh* mesh = GO->GetComponent<ComponentMesh>(Component::ComponentType::Mesh);
 
-		if (mesh && mesh->resource_mesh)
-		{
-			AABB aabb;
-			aabb.SetNegativeInfinity();
-			aabb.Enclose(mesh->resource_mesh->Vertices, mesh->resource_mesh->VerticesSize);
-			aabb.Translate(transform->GetPosition());
-			float3 center = aabb.CenterPoint();
+		if (mesh && mesh->resource_mesh) {
+			float3 center = GO->GetAABB().CenterPoint();
 
 			reference.x = center.x;
 			reference.y = center.y;

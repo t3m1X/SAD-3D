@@ -14,6 +14,10 @@
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
 
+#include "Application.h"
+#include "ModuleRenderer3D.h"
+#include "ModuleTimeManager.h"
+
 #include "mmgr/mmgr.h"
 
 ComponentRenderer::ComponentRenderer(GameObject* ContainerGO): Component(ContainerGO, Component::ComponentType::Renderer)
@@ -30,10 +34,28 @@ void ComponentRenderer::Draw() const
 	ComponentMesh * mesh = this->GO->GetComponent<ComponentMesh>(Component::ComponentType::Mesh);
 	ComponentTransform* transform = GO->GetComponent<ComponentTransform>(Component::ComponentType::Transform);
 	ComponentCamera* camera = GO->GetComponent<ComponentCamera>(Component::ComponentType::Camera);
+	ComponentMaterial* mat = GO->GetComponent<ComponentMaterial>(Component::ComponentType::Material);
 
-	// --- Send transform to OpenGL and use it to draw ---
-	glPushMatrix();
-	glMultMatrixf(transform->GetGlobalTransform().Transposed().ptr());
+	uint shader = App->renderer3D->defaultShader->shaderID;
+
+	if (mat) {
+		shader = mat->resource_material->shader->shaderID;
+		mat->resource_material->UpdateUniforms();
+	}
+
+	glUseProgram(shader);
+
+	GLint modelLoc = glGetUniformLocation(shader, "SAD_Model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, transform->GetGlobalTransform().Transposed().ptr());
+
+	GLint viewLoc = glGetUniformLocation(shader, "SAD_View");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, App->renderer3D->active_camera->GetOpenGLViewMatrix().ptr());
+
+	GLint projectLoc = glGetUniformLocation(shader, "SAD_Projection");
+	glUniformMatrix4fv(projectLoc, 1, GL_FALSE, App->renderer3D->active_camera->GetOpenGLProjectionMatrix().ptr());
+
+	GLint timeLoc = glGetUniformLocation(shader, "SAD_Time");
+	glUniform1f(timeLoc, App->time->GetTime());
 
 	if (mesh && mesh->resource_mesh && mesh->IsEnabled())
 	{
@@ -42,75 +64,50 @@ void ComponentRenderer::Draw() const
 		DrawAxis();
 	}
 
-	// --- Pop transform so OpenGL does not use it for other operations ---
-	glPopMatrix();
+	glUseProgram(App->renderer3D->defaultShader->shaderID);
 
 	// --- Draw Frustum ---
 	if (camera)
 		ModuleSceneManager::DrawWire(camera->frustum, White);
 
 	if(App->scene_manager->display_boundingboxes)
-	ModuleSceneManager::DrawWire(GO->GetAABB(), Green);
+		ModuleSceneManager::DrawWire(GO->GetAABB(), Green);
 }
 
 inline void ComponentRenderer::DrawMesh(ResourceMesh& mesh, ComponentMaterial* mat) const
 {
-	// --- Draw Texture ---
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY); // enable gl capability
-	glEnableClientState(GL_VERTEX_ARRAY); // enable client-side capability
-	glEnable(GL_TEXTURE_2D); // enable gl capability
-	glActiveTexture(GL_TEXTURE0); // In case we had multitexturing, we should set which one is active 
+	glBindVertexArray(mesh.VAO);
 
-	// --- If the mesh has a material associated, use it ---
-
-	if (mat && mat->IsEnabled())
-	{
-		if(this->checkers)
-		glBindTexture(GL_TEXTURE_2D, App->textures->GetCheckerTextureID()); // start using texture
+	if (mat && mat->IsEnabled()) {
+		if (this->checkers)
+			glBindTexture(GL_TEXTURE_2D, App->textures->GetCheckerTextureID()); // start using texture
 		else
-		glBindTexture(GL_TEXTURE_2D, mat->resource_material->resource_diffuse->buffer_id); // start using texture
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.TextureCoordsID); // start using created buffer (tex coords)
-		glTexCoordPointer(2, GL_FLOAT, 0, NULL); // Specify type of data format
+			glBindTexture(GL_TEXTURE_2D, mat->resource_material->resource_diffuse->buffer_id); // start using texture
 	}
 
-	// --- Draw mesh ---
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.VerticesID); // start using created buffer (vertices)
-	glVertexPointer(3, GL_FLOAT, 0, NULL); // Use selected buffer as vertices 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.IndicesID); // start using created buffer (indices)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.EBO);
 	glDrawElements(GL_TRIANGLES, mesh.IndicesSize, GL_UNSIGNED_INT, NULL); // render primitives from array data
 
-	// ----        ----
-
-	// --- Unbind buffers ---
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0); // Stop using buffer (vertices)
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Stop using buffer (indices)
+	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0); // Stop using buffer (texture)
-
-	// --- Disable capabilities ---
-	glDisable(GL_TEXTURE_2D); // enable gl capability
-	glActiveTexture(GL_TEXTURE0); // In case we had multitexturing, we should reset active texture
-	glDisableClientState(GL_VERTEX_ARRAY); // disable client-side capability
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY); // disable client-side capability
 
 }
 
 inline void ComponentRenderer::DrawNormals(const ResourceMesh& mesh) const
 {
 	// --- Draw Mesh Normals ---
-	glBegin(GL_LINES);
 	glLineWidth(1.0f);
 
-	glColor4f(0.0f, 0.5f, 0.5f, 1.0f);
+	//glColor4f(0.0f, 0.5f, 0.5f, 1.0f);
 
-	if (draw_vertexnormals && mesh.Normals)
+	if (draw_vertexnormals && mesh.Vertices->normal)
 	{
 		// --- Draw Vertex Normals ---
 
 		for (uint j = 0; j < mesh.IndicesSize; ++j)
 		{
-			glVertex3f(mesh.Vertices[mesh.Indices[j]].x, mesh.Vertices[mesh.Indices[j]].y, mesh.Vertices[mesh.Indices[j]].z);
-			glVertex3f(mesh.Vertices[mesh.Indices[j]].x + mesh.Normals[mesh.Indices[j]].x*NORMAL_LENGTH, mesh.Vertices[mesh.Indices[j]].y + mesh.Normals[mesh.Indices[j]].y*NORMAL_LENGTH, mesh.Vertices[mesh.Indices[j]].z + mesh.Normals[mesh.Indices[j]].z*NORMAL_LENGTH);
+			glVertex3f(mesh.Vertices[mesh.Indices[j]].position[0], mesh.Vertices[mesh.Indices[j]].position[1], mesh.Vertices[mesh.Indices[j]].position[2]);
+			glVertex3f(mesh.Vertices[mesh.Indices[j]].position[0] + mesh.Vertices[mesh.Indices[j]].normal[0] * NORMAL_LENGTH, mesh.Vertices[mesh.Indices[j]].position[1] + mesh.Vertices[mesh.Indices[j]].normal[1] * NORMAL_LENGTH, mesh.Vertices[mesh.Indices[j]].position[2] + mesh.Vertices[mesh.Indices[j]].normal[2] * NORMAL_LENGTH);
 		}
 
 	}
@@ -123,9 +120,9 @@ inline void ComponentRenderer::DrawNormals(const ResourceMesh& mesh) const
 
 		for (uint j = 0; j < mesh.IndicesSize / 3; ++j)
 		{
-			face.a = mesh.Vertices[mesh.Indices[j * 3]];
-			face.b = mesh.Vertices[mesh.Indices[(j * 3) + 1]];
-			face.c = mesh.Vertices[mesh.Indices[(j * 3) + 2]];
+			face.a = float3(mesh.Vertices[mesh.Indices[j * 3]].position);
+			face.b = float3(mesh.Vertices[mesh.Indices[(j * 3) + 1]].position);
+			face.c = float3(mesh.Vertices[mesh.Indices[(j * 3) + 2]].position);
 
 			float3 face_center = face.Centroid();
 
@@ -140,8 +137,8 @@ inline void ComponentRenderer::DrawNormals(const ResourceMesh& mesh) const
 	}
 
 	glLineWidth(1.0f);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glEnd();
+	//glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	//glEnd();
 
 }
 

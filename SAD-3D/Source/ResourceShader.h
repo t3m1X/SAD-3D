@@ -49,7 +49,7 @@ public:
 	void GetAllUniforms(std::vector<Uniform*>& uniforms) const;
 
 	/* Utilities */
-	void inline Use() const;
+	void Use() const;
 	void ReloadAndCompileShader();
 	void FillUniform(Uniform& uniform, const char* name, const uint type) const;
 

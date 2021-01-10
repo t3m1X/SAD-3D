@@ -7,6 +7,7 @@
 #define MAX_LIGHTS 8
 
 class ComponentCamera;
+class ResourceShader;
 
 class ModuleRenderer3D : public Module
 {
@@ -36,6 +37,8 @@ public:
 	bool GetVSync() const;
 
 public:
+
+	ResourceShader* defaultShader = nullptr;
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
