@@ -11,6 +11,14 @@ public:
 	// Shader uniforms
 	struct Uniform {
 		union variable {
+			variable() { //These must be initialized
+				Uint = 0;
+				Ufloat = 0.f;
+				Ufloat2 = { 0.f, 0.f };
+				Ufloat3 = { 0.f, 0.f, 0.f };
+				Ufloat4 = { 0.f, 0.f, 0.f, 0.f };
+				Ubool = true;
+			}
 			int Uint;
 			float Ufloat;
 			float2 Ufloat2;
@@ -48,8 +56,8 @@ public:
 	/* Program variabless */
 	uint shaderID = 0;
 	std::string ShaderCode;
-	std::string vShaderCode;
-	std::string fShaderCode;
+	std::string VertexCode;
+	std::string FragmentCode;
 
 private:
 	uint vertexID = 0;
@@ -57,10 +65,10 @@ private:
 
 	bool LoadFromFile();
 
-	bool CreateVertexShader(uint vertexID);
+	inline bool CreateVertexShader(uint& vID);
 	bool CreateVertexShader();
-	bool CreateFragmentShader(uint fragmentID);
-	bool CreateFragmentShader();
+	bool CreateFragmentShader(uint& fID);
+	inline bool CreateFragmentShader();
 	bool CreateShaderProgram();
 	void DeleteShaderProgram();
 };

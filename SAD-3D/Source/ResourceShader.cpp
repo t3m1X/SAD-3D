@@ -4,6 +4,13 @@
 
 #include "OpenGL.h"
 
+ResourceShader::ResourceShader() : Resource(Resource::ResourceType::SHADER) {
+}
+
+ResourceShader::~ResourceShader() {
+	DeleteShaderProgram();
+}
+
 void ResourceShader::LoadOnMemory() {
 	if (LoadFromFile()) {
 		DeleteShaderProgram();
@@ -17,9 +24,9 @@ void ResourceShader::LoadOnMemory() {
 		uint version_end_location = ShaderCode.find_first_of('\n', version_location);
 		uint fragment_location = ShaderCode.find(ftag);
 
-		vShaderCode = ShaderCode.substr(0, fragment_location - 1);
-		fShaderCode = ShaderCode.substr(version_location, version_end_location);
-		fShaderCode += ShaderCode.substr(fragment_location, ShaderCode.size());
+		VertexCode = ShaderCode.substr(0, fragment_location - 1);
+		FragmentCode = ShaderCode.substr(version_location, version_end_location);
+		FragmentCode += ShaderCode.substr(fragment_location, ShaderCode.size());
 
 		/* Compile shaders */
 		char error_log[512];
@@ -255,5 +262,57 @@ bool ResourceShader::LoadFromFile() {
 
 	return ret;
 }
+
+bool ResourceShader::CreateVertexShader(uint& vID) {
+	GLint success = 0;
+
+	vID = glCreateShader(GL_VERTEX_SHADER);
+	const char* vVertex = VertexCode.c_str();
+	glShaderSource(vID, 1, &vVertex, NULL);
+	glCompileShader(vID);
+	glGetShaderiv(vID, GL_COMPILE_STATUS, &success);
+
+	return success;
+}
+
+inline bool ResourceShader::CreateVertexShader() {
+	return CreateVertexShader(vertexID);
+}
+
+bool ResourceShader::CreateFragmentShader(uint& fID) {
+	GLint success = 0;
+
+	fID = glCreateShader(GL_FRAGMENT_SHADER);
+	const char* fFragment = FragmentCode.c_str();
+	glShaderSource(fID, 1, &fFragment, NULL);
+	glCompileShader(fID);
+	glGetShaderiv(fID, GL_COMPILE_STATUS, &success);
+
+	return success;
+}
+
+inline bool ResourceShader::CreateFragmentShader() {
+	return CreateFragmentShader(fragmentID);
+}
+
+bool ResourceShader::CreateShaderProgram() {
+	GLint success = 0;
+
+	shaderID = glCreateProgram();
+	glAttachShader(shaderID, vertexID);
+	glAttachShader(shaderID, fragmentID);
+	glLinkProgram(shaderID);
+	glGetProgramiv(shaderID, GL_LINK_STATUS, &success);
+
+	return success;
+}
+
+void ResourceShader::DeleteShaderProgram() {
+	if (glIsProgram(shaderID)) {
+		glDeleteProgram(shaderID);
+		shaderID = 0;
+	}
+}
+
 
 

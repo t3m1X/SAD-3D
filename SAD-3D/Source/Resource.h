@@ -15,8 +15,9 @@ public:
 		MESH,
 		TEXTURE,
 		MATERIAL,
+		SHADER,
 		META,
-		UNKNOWN,
+		UNKNOWN
 	};
 
 	Resource(ResourceType type);
