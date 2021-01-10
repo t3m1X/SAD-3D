@@ -140,6 +140,17 @@ uint ModuleResources::GetModDateFromMeta(const char * file)
 	return DATE;
 }
 
+std::map<std::string, Resource*> ModuleResources::GetResourceNamesByType(const Resource::ResourceType type) {
+	std::map<std::string, Resource*> ret;
+
+	for (auto it = resources.begin(); it != resources.end(); ++it) {
+		if ((*it).second->GetType() == type)
+			ret[(*it).second->GetName()] = (*it).second;
+	}
+
+	return ret;
+}
+
 Resource * ModuleResources::CreateResource(Resource::ResourceType type)
 {
 	Resource* resource = nullptr;

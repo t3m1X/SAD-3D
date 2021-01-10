@@ -31,6 +31,8 @@ public:
 	uint GetUIDFromMeta(const char* file);
 	uint GetModDateFromMeta(const char* file);
 
+	std::map<std::string, Resource*> GetResourceNamesByType(const Resource::ResourceType type);
+
 	Resource* CreateResource(Resource::ResourceType type);
 
 private:
