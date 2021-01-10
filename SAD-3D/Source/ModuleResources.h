@@ -31,9 +31,11 @@ public:
 	uint GetUIDFromMeta(const char* file);
 	uint GetModDateFromMeta(const char* file);
 
+	void DeleteResource(uint UID);
+
 	std::map<std::string, Resource*> GetResourceNamesByType(const Resource::ResourceType type);
 
-	Resource* CreateResource(Resource::ResourceType type);
+	Resource* CreateResource(Resource::ResourceType type, uint UID = 0);
 
 private:
 	// --- Resources in memory ---

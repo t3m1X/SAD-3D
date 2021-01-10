@@ -5,6 +5,7 @@
 #include "ResourceMesh.h"
 #include "ResourceMaterial.h"
 #include "ResourceTexture.h"
+#include "ResourceShader.h"
 
 #include "mmgr/mmgr.h"
 
@@ -140,6 +141,14 @@ uint ModuleResources::GetModDateFromMeta(const char * file)
 	return DATE;
 }
 
+void ModuleResources::DeleteResource(uint UID) {
+	auto position = resources.find(UID);
+	if (position != resources.end()) 		{
+		delete (*position).second;
+		resources.erase(position);
+	}
+}
+
 std::map<std::string, Resource*> ModuleResources::GetResourceNamesByType(const Resource::ResourceType type) {
 	std::map<std::string, Resource*> ret;
 
@@ -151,7 +160,7 @@ std::map<std::string, Resource*> ModuleResources::GetResourceNamesByType(const R
 	return ret;
 }
 
-Resource * ModuleResources::CreateResource(Resource::ResourceType type)
+Resource * ModuleResources::CreateResource(Resource::ResourceType type, uint UID)
 {
 	Resource* resource = nullptr;
 
@@ -168,10 +177,16 @@ Resource * ModuleResources::CreateResource(Resource::ResourceType type)
 	case Resource::ResourceType::MATERIAL:
 		resource = (Resource*)new ResourceMaterial;
 		break;
+	case Resource::ResourceType::SHADER:
+		resource = (Resource*)new ResourceShader;
+		break;
 	}
 
-	if (resource)
+	if (resource) {
+		if (UID != 0)
+			resource->SetUID(UID);
 		resources[resource->GetUID()] = resource;
+	}
 
 	return resource;
 }
