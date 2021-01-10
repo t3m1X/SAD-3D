@@ -4,6 +4,7 @@
 #include "Importer.h"
 #include <vector>
 #include <map>
+#include <string>
 
 class ImporterMesh;
 class ImporterMaterial;

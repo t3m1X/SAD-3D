@@ -1,10 +1,8 @@
-# CENTRAL 3D
-- Version 0.2
-- Initial steps into 3D game engine development
-- By Aitor Simona 
-* GitHub account: [AitorSimona](https://github.com/AitorSimona)
-* GitHub repository: [Repository](https://github.com/AitorSimona/CENTRAL-3D)
+# SAD 3D
+This engine is a fork of [Aitor Simona's](https://github.com/AitorSimona) [CENTRAL 3D](https://github.com/AitorSimona/CENTRAL-3D) version [0.2](https://github.com/AitorSimona/CENTRAL-3D/tree/Assignment2).
+All copyright for the base code is Aitor's.
 
+All alterations to the above code for Delivery 3 are done by Sergi Parra
 ## TOOLS USED
 
 - Microsoft Visual Studio 2017
@@ -75,7 +73,7 @@ There are more options in Window - > Settings
 
 ## CHANGELOG
 
-### 0.2
+### CENTRAL 3D 0.2
 
 - Initial Structure of Resource Manager
 - Reference Counting for ResourceMesh and ResourceTexture
@@ -89,7 +87,7 @@ There are more options in Window - > Settings
 - Project window
 - Mouse picking 
 
-### 0.1
+### CENTRAL 3D 0.1
 
 - Polished Game Object and Component Structure
 - Initial Implementation on Inspector (properties for the different components)
@@ -97,7 +95,7 @@ There are more options in Window - > Settings
 - Possibility of primitives creation through GameObject Menu
 - Unity-like Camera Controls 
 
-### 0.05
+### CENTRAL 3D 0.05
 
 - Libraries Integration
 - Basic Editor with Inspector/Hierarchy/Console/Menu
@@ -112,7 +110,8 @@ There are more options in Window - > Settings
 
 MIT License
 
-Copyright (c) 2019 Aitor Simona Bouzas
+Copyright (c) 2019 Aitor Simona Bouzas on base code from CENTRAL-3D
+Copyright (c) 2021 Sergi Parra Ramírez on all alterations after
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -131,5 +130,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 

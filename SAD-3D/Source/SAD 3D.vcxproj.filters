@@ -793,7 +793,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CENTRAL 3D.rc">
+    <ResourceCompile Include="SAD 3D.rc">
       <Filter>Sources\VSResources</Filter>
     </ResourceCompile>
   </ItemGroup>
