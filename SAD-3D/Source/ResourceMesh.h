@@ -5,6 +5,13 @@
 #include "Globals.h"
 #include "MathGeoLib/include/Geometry/AABB.h"
 
+struct Vertex {
+	float position[3];
+	float normal[3];
+	unsigned char color[4];
+	float texCoord[2];
+};
+
 class ResourceMesh : public Resource
 {
 public:
@@ -17,22 +24,23 @@ public:
 	void LoadOnMemory();
 	void FreeMemory();
 
+private:
+	void CreateVBO();
+	void CreateEBO();
+	void CreateVAO();
+
 public:
 
-	float3* Vertices = nullptr;
-	uint VerticesID = 0; // unique vertex in VRAM
+	Vertex* Vertices = nullptr;
 	uint VerticesSize = 0;
 
 	uint* Indices = nullptr;
-	uint IndicesID = 0; // index in VRAM
 	uint IndicesSize = 0;
 
-	float3* Normals = nullptr;
-	uint NormalsSize = 0;
+	uint VBO = 0;	// Vertex Buffer Object
+	uint EBO = 0;	// Element/Index Buffer Object
 
-	float* TexCoords = nullptr;
-	uint  TextureCoordsID = 0;
-	uint TexCoordsSize = 0;
+	uint VAO = 0;	// Vertex Array Object
 
 	AABB aabb;
 };
