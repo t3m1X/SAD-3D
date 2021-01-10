@@ -163,27 +163,27 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 {
 	if (active_camera->update_projection)
 	{
-		UpdateProjectionMatrix();
+		//UpdateProjectionMatrix();
 		active_camera->update_projection = false;
 	}
 
-	// --- Reset Buffers to default values ---
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glLoadIdentity();
+	//// --- Reset Buffers to default values ---
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(0.f, 0.f, 0.f, 1.f);
+	//glLoadIdentity();
 
-	// --- Set Model View as current ---
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(active_camera->GetOpenGLViewMatrix().ptr());
+	//// --- Set Model View as current ---
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadMatrixf(active_camera->GetOpenGLViewMatrix().ptr());
 
 	// --- Update OpenGL Capabilities ---
 	UpdateGLCapabilities();
 
 	// light 0 on cam pos, Render lights
-	lights[0].SetPos(active_camera->frustum.Pos().x, active_camera->frustum.Pos().y, active_camera->frustum.Pos().z);
+	/*lights[0].SetPos(active_camera->frustum.Pos().x, active_camera->frustum.Pos().y, active_camera->frustum.Pos().z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
-		lights[i].Render();
+		lights[i].Render();*/
 
 	return UPDATE_CONTINUE;
 }
@@ -191,15 +191,18 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
-	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	//glClearColor(0.278f, 0.278f, 0.278f, 0.278f);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//glClear(GL_DEPTH_BUFFER_BIT);
+	// --- Clear framebuffers ---
+	glClearColor(0.278f, 0.278f, 0.278f, 0.278f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glClearColor(0.278f, 0.278f, 0.278f, 0.278f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// --- Draw Level Geometry ---
 	App->scene_manager->Draw();
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//glClearColor(0.278f, 0.278f, 0.278f, 0.278f);
 
 	// --- Draw everything and swap buffers ---
@@ -216,6 +219,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 bool ModuleRenderer3D::CleanUp()
 {
 	CONSOLE_LOG("Destroying 3D Renderer");
+
+	App->resources->DeleteResource(defaultShader->GetUID());
 
 	glDeleteFramebuffers(1, &fbo);
 	SDL_GL_DeleteContext(context);
