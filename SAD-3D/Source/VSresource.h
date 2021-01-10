@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Archivo de inclusión generado de Microsoft Visual C++.
-// Usado por CENTRAL 3D.rc
+// Usado por SAD 3D.rc
 //
 #define IDI_ICON1                       101
 

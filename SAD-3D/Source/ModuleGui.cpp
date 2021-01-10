@@ -247,17 +247,17 @@ update_status ModuleGui::Update(float dt)
 
 				if (ImGui::MenuItem("Documentation"))
 				{
-					RequestBrowser("https://github.com/AitorSimona/CENTRAL-3D/wiki");
+					RequestBrowser("https://github.com/t3m1X/SAD-3D/wiki");
 				}
 
 				if (ImGui::MenuItem("Download latest"))
 				{
-					RequestBrowser("https://github.com/AitorSimona/CENTRAL-3D/releases");
+					RequestBrowser("https://github.com/t3m1X/SAD-3D/releases");
 				}
 
 				if (ImGui::MenuItem("Report a bug"))
 				{
-					RequestBrowser("https://github.com/AitorSimona/CENTRAL-3D/issues");
+					RequestBrowser("https://github.com/t3m1X/SAD-3D/issues");
 				}
 
 				if (ImGui::MenuItem("About"))

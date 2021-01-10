@@ -29,8 +29,8 @@ enum update_status
 
 
 // Configuration -----------
-#define TITLE "CENTRAL 3D"
-#define VERSION "0.05"
+#define TITLE "SAD 3D"
+#define VERSION "2.0"
 #define ASSETS_FOLDER "Assets/"
 #define SETTINGS_FOLDER "Settings/"
 #define LIBRARY_FOLDER "Library/"
