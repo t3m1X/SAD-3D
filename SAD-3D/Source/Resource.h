@@ -34,6 +34,9 @@ public:
 	void SetOriginalFilename(const char* filename);
 
 	// --- Utilities ---
+	void Load();
+	void Free();
+
 	virtual void LoadOnMemory() {};
 	virtual void FreeMemory() {};
 

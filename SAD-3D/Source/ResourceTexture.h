@@ -9,7 +9,6 @@ public:
 	ResourceTexture();
 	~ResourceTexture();
 
-	void LoadOnMemory();
 	void FreeMemory();
 
 public:

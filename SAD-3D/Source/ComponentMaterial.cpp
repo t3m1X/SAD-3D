@@ -1,5 +1,9 @@
 #include "ComponentMaterial.h"
 
+// Resources
+#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
+
 #include "mmgr/mmgr.h"
 
 ComponentMaterial::ComponentMaterial(Component::ComponentType type) : Component(type)
@@ -9,12 +13,12 @@ ComponentMaterial::ComponentMaterial(Component::ComponentType type) : Component(
 
 ComponentMaterial::~ComponentMaterial()
 {	
-	resource_material->resource_diffuse->instances--;
+	FreeTexture();
 }
 
 void ComponentMaterial::FreeTexture()
 {
-	resource_material->resource_diffuse->FreeMemory();
+	resource_material->resource_diffuse->Free();
 }
 
 

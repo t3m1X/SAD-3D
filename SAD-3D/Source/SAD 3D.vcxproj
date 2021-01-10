@@ -211,6 +211,7 @@
     <ClInclude Include="ResourceFolder.h" />
     <ClInclude Include="ResourceMaterial.h" />
     <ClInclude Include="ResourceMesh.h" />
+    <ClInclude Include="ResourceShader.h" />
     <ClInclude Include="ResourceTexture.h" />
     <ClInclude Include="VSresource.h" />
     <ClInclude Include="Timer.h" />

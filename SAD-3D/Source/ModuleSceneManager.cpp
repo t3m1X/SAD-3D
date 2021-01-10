@@ -402,8 +402,8 @@ GameObject * ModuleSceneManager::CreateEmptyGameObject()
 	// --- Set Parent GO ---
 	root->AddChildGO(new_object);
 
-	if(DefaultMaterial)
-		DefaultMaterial->resource_material->resource_diffuse->instances++;
+	if (DefaultMaterial)
+		DefaultMaterial->resource_material->resource_diffuse->Load();
 
 
 	// --- Assign Default Material ---
@@ -640,8 +640,8 @@ GameObject * ModuleSceneManager::LoadCube()
 {
 	GameObject* new_object = CreateEmptyGameObject();
 	ComponentMesh * comp_mesh = (ComponentMesh*)new_object->AddComponent(Component::ComponentType::Mesh);
+	cube->Load();
 	comp_mesh->resource_mesh = cube;
-	cube->instances++;
 	ComponentRenderer* Renderer = (ComponentRenderer*)new_object->AddComponent(Component::ComponentType::Renderer);
 
 	return new_object;
@@ -652,7 +652,7 @@ GameObject * ModuleSceneManager::LoadSphere()
 	GameObject* new_object = CreateEmptyGameObject();
 	ComponentMesh * comp_mesh = (ComponentMesh*)new_object->AddComponent(Component::ComponentType::Mesh);
 	comp_mesh->resource_mesh = sphere;
-	sphere->instances++;
+	sphere->Load();
 	ComponentRenderer* Renderer = (ComponentRenderer*)new_object->AddComponent(Component::ComponentType::Renderer);
 
 	return new_object;

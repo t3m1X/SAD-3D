@@ -11,6 +11,8 @@
 #include "ModuleSceneManager.h"
 
 #include "ResourceMesh.h"
+#include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 #include "mmgr/mmgr.h"
 

@@ -6,6 +6,7 @@
 
 #include "ComponentMaterial.h"
 #include "ResourceMaterial.h"
+#include "ResourceTexture.h"
 
 #include "Assimp/include/scene.h"
 
@@ -60,7 +61,7 @@ bool ImporterMaterial::Import(const char * File_path, const ImportData & IData) 
 			if (texture)
 			{
 				MData.new_material->resource_diffuse = texture;
-				texture->instances++;
+				texture->Load();
 			}
 			else
 			{

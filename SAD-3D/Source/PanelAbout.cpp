@@ -46,7 +46,7 @@ bool PanelAbout::Draw()
 		ImGui::TextWrapped("Copyright(c) 2019 Aitor Simona Bouzas");
 		ImGui::TextWrapped("Copyright (c) 2021 Sergi Parra Ramirez");
 		ImGui::TextWrapped("Copyright for portions of SAD 3D are held by Aitor Simona Bouzas, 2019 as part of project CENTRAL 3D (Version 2.0).");
-		ImGui::TextWrapped("All other copyright for project SAD 3D are held by Sergi Parra Ramírez, 2021.");
+		ImGui::TextWrapped("All other copyright for project SAD 3D are held by Sergi Parra Ramirez, 2021.");
 		ImGui::TextWrapped("");
 		ImGui::TextWrapped("Permission is hereby granted, free of charge, to any person obtaining a copyof this software and associated documentation files(the <Software>), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions : ");
 		ImGui::TextWrapped("The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.");

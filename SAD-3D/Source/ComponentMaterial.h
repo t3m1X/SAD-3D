@@ -2,8 +2,8 @@
 #define __COMPONENT_MATERIAL_H__
 
 #include "Component.h"
-#include "ResourceMaterial.h"
 
+class ResourceMaterial;
 class ComponentMaterial : public Component
 {
 public:

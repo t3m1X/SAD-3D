@@ -22,6 +22,8 @@
 #include "ModuleResources.h"
 
 #include "ResourceMesh.h"
+#include "ResourceTexture.h"
+#include "ResourceMaterial.h"
 
 #include "mmgr/mmgr.h"
 
@@ -205,7 +207,7 @@ bool ImporterScene::Load(const char * exported_file) const
 						if (texture)
 						{
 							mat->resource_material->resource_diffuse = texture;
-							texture->instances++;
+							texture->Load();
 						}
 						else
 						{
@@ -235,7 +237,7 @@ bool ImporterScene::Load(const char * exported_file) const
 						if (rmesh)
 						{
 							mesh->resource_mesh = rmesh;
-							rmesh->instances++;
+							rmesh->Load();
 						}
 						else
 						{

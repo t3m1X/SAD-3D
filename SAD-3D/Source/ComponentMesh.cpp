@@ -11,7 +11,7 @@ ComponentMesh::ComponentMesh(GameObject* ContainerGO) : Component(ContainerGO,Co
 
 ComponentMesh::~ComponentMesh()
 {
-	resource_mesh->instances--;
+	resource_mesh->Free();
 }
 
 const AABB & ComponentMesh::GetAABB() const

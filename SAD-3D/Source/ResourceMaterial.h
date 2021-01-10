@@ -3,8 +3,8 @@
 
 #include "Resource.h"
 #include "Globals.h"
-#include "ResourceTexture.h"
 
+class ResourceTexture;
 
 class ResourceMaterial : public Resource
 {

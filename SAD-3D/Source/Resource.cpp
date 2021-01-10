@@ -53,3 +53,13 @@ void Resource::SetOriginalFilename(const char * filename)
 	std::string new_name = filename;
 	this->original_file = new_name;
 }
+
+void Resource::Load() {
+	if (instances++ == 0)
+		LoadOnMemory();
+}
+
+void Resource::Free() {
+	if (--instances == 0)
+		FreeMemory();
+}

@@ -194,8 +194,7 @@ bool ModuleImporter::LoadFromPath(const char* path) const
 					{
 						if (mat->resource_material->resource_diffuse)
 						{
-							mat->resource_material->resource_diffuse->instances--;
-							// MYTODO: UNLOAD RESOURCE FROM MEMORY
+							mat->resource_material->resource_diffuse->Free();
 						}
 
 						mat->resource_material->resource_diffuse = tex;
